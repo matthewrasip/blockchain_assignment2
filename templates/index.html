@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>New Inventory Record</title>
+</head>
+<body>
+  <h1>Add New Record</h1>
+  <form action="{{ url_for('submit') }}" method="post">
+    <label for="node">Node:</label>
+    <select name="node" id="node">
+      <option>A</option><option>B</option><option>C</option><option>D</option>
+    </select><br>
+
+    <label for="item_id">Item ID:</label>
+    <input type="text" name="item_id" id="item_id"><br>
+
+    <label for="qty">Quantity:</label>
+    <input type="number" name="qty" id="qty"><br>
+
+    <label for="price">Price:</label>
+    <input type="number" step="0.01" name="price" id="price"><br>
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
