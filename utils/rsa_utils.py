@@ -1,6 +1,7 @@
 from hashlib import md5
 
 class Inventory:
+    # experimenting with ways we can get public and private keys to app.py
     def __init__(self, public_key, private_key):
         self.public_key = public_key
         self.private_key = private_key
