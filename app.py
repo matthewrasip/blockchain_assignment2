@@ -1,7 +1,12 @@
 from flask import Flask, render_template, request
 import json
 import os
-#from utils.rsa_utils import get_keypair, sign_message, verify_message
+
+# import funcitons
+import utils.rsa_utils
+
+# import variables/objects from key files
+import data.InventoryA.inventory_A_keys as A
 
 app = Flask(__name__)
 
@@ -41,6 +46,7 @@ def submit():
     #                        message=message,
     #                        signature=signature,
     #                        verification=verification)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
