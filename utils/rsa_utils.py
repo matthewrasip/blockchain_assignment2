@@ -20,7 +20,7 @@ def private_key_generation(p : int, q: int, public_key : list):
 
 def encrypt(raw_data : str, private_key : int, public_key : list):
     # turn raw data into md5 hash (hex), then into decimal (int)
-    hex_data = md5(raw_data)
+    hex_data = md5(raw_data.encode("utf-8"))
     decimal_data = int(hex_data, 16)
 
     # generate the signature

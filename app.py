@@ -3,10 +3,13 @@ import json
 import os
 
 # import funcitons
-import utils.rsa_utils
+from utils.rsa_utils import encrypt
 
 # import variables/objects from key files
 import data.InventoryA.inventory_A_keys as A
+import data.InventoryB.inventory_B_keys as B
+import data.InventoryC.inventory_C_keys as C
+import data.InventoryD.inventory_D_keys as D
 
 app = Flask(__name__)
 
@@ -21,7 +24,25 @@ def submit():
     qty     = int(request.form['qty'])
     price   = float(request.form['price'])
 
-    print(f"{node}, {item_id}, {qty}, {price}")
+    combined_string = f"{node}{item_id}{qty}{price}"
+
+    if node == "A":
+        relevant_public_key = A.public_key_A
+        relevant_private_key = A.private_key_A
+    elif node == "B":
+        relevant_public_key = B.public_key_B
+        relevant_private_key = B.private_key_B
+    elif node == "C":
+        relevant_public_key = C.public_key_C
+        relevant_private_key = C.private_key_C
+    elif node == "D":
+        relevant_public_key = D.public_key_D
+        relevant_private_key = D.private_key_D
+
+    print(combined_string)
+
+    encrypted_message = encrypt(combined_string, relevant_private_key, relevant_public_key)
+    print(encrypted_message)
 
     # 3) Append to this node's JSON file
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')
