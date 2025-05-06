@@ -1,27 +1,90 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>New Inventory Record</title>
+  <title>Enter New Inventory Record</title>
+  <style>
+    /* Full-page flex container */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Form card */
+    .container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 0.5rem 0 0.25rem;
+      color: #555;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.6rem;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h1>Add New Record</h1>
-  <form action="{{ url_for('submit') }}" method="post">
-    <label for="node">Node:</label>
-    <select name="node" id="node">
-      <option>A</option><option>B</option><option>C</option><option>D</option>
-    </select><br>
+  <div class="container">
+    <h1>Enter a New Inventory Record</h1>
+    <form action="{{ url_for('submit') }}" method="post">
+      <label for="node">Select Node</label>
+      <select name="node" id="node">
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+      </select>
 
-    <label for="item_id">Item ID:</label>
-    <input type="text" name="item_id" id="item_id"><br>
+      <label for="item_id">Item ID</label>
+      <input type="text" name="item_id" id="item_id" placeholder="e.g. 005">
 
-    <label for="qty">Quantity:</label>
-    <input type="number" name="qty" id="qty"><br>
+      <label for="qty">Quantity</label>
+      <input type="number" name="qty" id="qty" min="0" placeholder="e.g. 10">
 
-    <label for="price">Price:</label>
-    <input type="number" step="0.01" name="price" id="price"><br>
+      <label for="price">Price</label>
+      <input type="number" step="0.01" name="price" id="price" min="0" placeholder="e.g. 19.99">
 
-    <button type="submit">Submit</button>
-  </form>
+      <button type="submit">Submit Record</button>
+    </form>
+  </div>
 </body>
 </html>
