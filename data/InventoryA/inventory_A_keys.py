@@ -6,5 +6,3 @@ e = 815459040813953176289801
 
 public_key_A = public_key_generation(p, q, e)
 private_key_A = private_key_generation(p , q, public_key_A)
-
-print(public_key_A, private_key_A)
