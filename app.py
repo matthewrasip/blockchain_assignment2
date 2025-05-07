@@ -24,7 +24,7 @@ def submit():
     qty     = int(request.form['qty'])
     price   = float(request.form['price'])
 
-    combined_string = f"{node}{item_id}{qty}{price}"
+    combined_string = f"{item_id}{qty}{price}{node}"
 
     if node == "A":
         relevant_public_key = A.public_key_A
