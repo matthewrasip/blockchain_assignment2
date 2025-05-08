@@ -44,20 +44,16 @@ def submit():
     elif node == "D":
         relevant_public_key = D.inventory_D_object.public_key
         relevant_private_key = D.inventory_D_object.private_key
-
-    # print(combined_string)
+        
 
     encrypted_message = encrypt(combined_string, relevant_private_key, relevant_public_key)
-    # print(encrypted_message)
 
     # begin consensus / verificaiton 
     for inventory in inventories:
         if verification(encrypted_message[0], encrypted_message[1], relevant_public_key):
             successful_checks += 1
-
-    # print(successful_checks)
     
-    if successful_checks >= (len(inventories)/3 * 2):
+    if successful_checks >= (len(inventories)/3 * 2): 
         print("success!!!")
 
 
