@@ -34,16 +34,16 @@ def submit():
 
     if node == "A":
         relevant_public_key = A.inventory_A_object.public_key
-        relevant_private_key = A.private_key_A
+        relevant_private_key = A.inventory_A_object.private_key
     elif node == "B":
-        relevant_public_key = B.public_key_B
-        relevant_private_key = B.private_key_B
+        relevant_public_key = B.inventory_B_object.public_key
+        relevant_private_key = B.inventory_B_object.private_key
     elif node == "C":
-        relevant_public_key = C.public_key_C
-        relevant_private_key = C.private_key_C
+        relevant_public_key = C.inventory_C_object.public_key
+        relevant_private_key = C.inventory_C_object.private_key
     elif node == "D":
-        relevant_public_key = D.public_key_D
-        relevant_private_key = D.private_key_D
+        relevant_public_key = D.inventory_D_object.public_key
+        relevant_private_key = D.inventory_D_object.private_key
 
     # print(combined_string)
 
@@ -55,7 +55,7 @@ def submit():
         if verification(encrypted_message[0], encrypted_message[1], relevant_public_key):
             successful_checks += 1
 
-    print(successful_checks)
+    # print(successful_checks)
     
     if successful_checks >= (len(inventories)/3 * 2):
         print("success!!!")
