@@ -2,18 +2,18 @@ from flask import Flask, render_template, request
 import json
 import os
 
-# QUESTIONS
-#   does each key.py file need copies of other inventory's public keys?
-#   surely pBFT is okay?
 
 # import funcitons
-from utils.rsa_utils import encrypt
+from utils.rsa_utils import encrypt, verification
 
 # import variables/objects from key files
 import data.InventoryA.inventory_A_keys as A
 import data.InventoryB.inventory_B_keys as B
 import data.InventoryC.inventory_C_keys as C
 import data.InventoryD.inventory_D_keys as D
+
+# creating list for inventories
+inventories = [A.inventory_A_object, B.inventory_B_object, C.inventory_C_object, D.inventory_D_object]
 
 app = Flask(__name__)
 
@@ -23,6 +23,8 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    successful_checks = 0
+
     node    = request.form['node']       # 'A','B','C' or 'D'
     item_id = request.form['item_id']
     qty     = int(request.form['qty'])
@@ -31,7 +33,7 @@ def submit():
     combined_string = f"{item_id}{qty}{price}{node}"
 
     if node == "A":
-        relevant_public_key = A.public_key_A
+        relevant_public_key = A.inventory_A_object.public_key
         relevant_private_key = A.private_key_A
     elif node == "B":
         relevant_public_key = B.public_key_B
@@ -43,10 +45,21 @@ def submit():
         relevant_public_key = D.public_key_D
         relevant_private_key = D.private_key_D
 
-    print(combined_string)
+    # print(combined_string)
 
     encrypted_message = encrypt(combined_string, relevant_private_key, relevant_public_key)
-    print(encrypted_message)
+    # print(encrypted_message)
+
+    # begin consensus / verificaiton 
+    for inventory in inventories:
+        if verification(encrypted_message[0], encrypted_message[1], relevant_public_key):
+            successful_checks += 1
+
+    print(successful_checks)
+    
+    if successful_checks >= (len(inventories)/3 * 2):
+        print("success!!!")
+
 
     # 3) Append to this node's JSON file
     # data_dir = os.path.join(os.path.dirname(__file__), 'data')

@@ -30,7 +30,7 @@ def encrypt(raw_data : str, private_key : int, public_key : list):
 
 
 def verification(message : int , signature : int, public_key : list):
-    if pow(signature, public_key[0], public_key[1]) == message:
+    if pow(signature, public_key[1], public_key[0]) == message:
         return True
     else:
         return False
