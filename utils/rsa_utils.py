@@ -24,7 +24,7 @@ def encrypt(raw_data : str, private_key : int, public_key : list):
     hex_data = hex_object.hexdigest()
     decimal_data = int(hex_data, 16)
 
-    # generate the signature
+    # generate the signature, returns (m, s)
     signature = pow(decimal_data, private_key, public_key[0])
     return [decimal_data, signature]
 

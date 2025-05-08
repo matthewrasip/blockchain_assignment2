@@ -2,6 +2,10 @@ from flask import Flask, render_template, request
 import json
 import os
 
+# QUESTIONS
+#   does each key.py file need copies of other inventory's public keys?
+#   surely pBFT is okay?
+
 # import funcitons
 from utils.rsa_utils import encrypt
 
