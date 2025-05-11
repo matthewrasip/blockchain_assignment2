@@ -95,5 +95,9 @@ def submit():
     # 5) Consensus failed
     return render_template('index.html', error="Verification failed")
 
+@app.route('/search', methods=['GET'])
+def search():
+    return render_template('search.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
