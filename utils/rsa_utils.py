@@ -7,7 +7,26 @@ class Inventory:
         self.private_key = private_key
         self.identity = identity
         self.rand_int = rand_int
-        
+
+class PKG:
+    def __init__(self, pkg_public_key : list, pkg_private_key : list):
+        self.pkg_public_key = pkg_public_key
+        self.pkg_private_key = pkg_private_key
+
+    # secret key generation
+    def signIdentity(self, identity : int):
+        return pow(identity, self.pkg_private_key[0], self.pkg_private_key[1])
+    
+
+    def computeT(self, rand_int : int):
+        return pow(rand_int, self.pkg_public_key[1], self.pkg_public_key[0])
+    
+    def aggregateT(self, t_values : list):
+        result = 1
+        for values in t_values:
+            result *= values
+        return result % self.pkg_public_key[0]
+
 
 def public_key_generation(p : int, q : int, e : int):
     public_key = [p*q, e]
@@ -29,6 +48,12 @@ def encrypt(raw_data : str, private_key : int, public_key : list):
     # generate the signature, returns (m, s)
     signature = pow(decimal_data, private_key, public_key[0])
     return [decimal_data, signature]
+
+def hashAggTandMessage(t : int, m):
+    combined_raw_data = f"{t}{m}"
+    hex_object = md5(combined_raw_data.encode("utf-8"))
+    hex_data = hex_object.digest()
+    return int(hex_data, 16)
 
 
 def verification(message : int , signature : int, public_key : list):
