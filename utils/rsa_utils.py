@@ -2,9 +2,11 @@ from hashlib import md5
 
 class Inventory:
     # experimenting with ways we can get public and private keys to app.py
-    def __init__(self, public_key, private_key):
+    def __init__(self, public_key : list, private_key : int, identity : int, rand_int : int):
         self.public_key = public_key
         self.private_key = private_key
+        self.identity = identity
+        self.rand_int = rand_int
         
 
 def public_key_generation(p : int, q : int, e : int):
