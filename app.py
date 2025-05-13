@@ -77,7 +77,7 @@ def submit():
                     db = json.load(f)
             except (FileNotFoundError, JSONDecodeError):
                 db = {'records': []}
-                
+
 
             # append new record
             db['records'].append({
