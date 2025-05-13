@@ -4,13 +4,15 @@ from json import JSONDecodeError
 import os
 
 # import functions
-from utils.rsa_utils import encrypt, verification
+from utils.rsa_utils import *
 
 # import key objects
 import data.InventoryA.inventory_A_keys as A
 import data.InventoryB.inventory_B_keys as B
 import data.InventoryC.inventory_C_keys as C
 import data.InventoryD.inventory_D_keys as D
+
+import data.pkg as server
 
 # list of all inventory objects (for consensus)
 inventories = [
@@ -99,6 +101,44 @@ def submit():
 @app.route('/search', methods=['GET'])
 def search():
     return render_template('search.html')
+
+# PKG variable loaded
+pkg = server.pkg
+
+
+# STEP 1: get ID from user
+
+# STEP 2: search each inventory for ID - returning all the data associated with it in the compressed format (idpriceqtylocation)
+
+# STEP 3: consensus with the compressed format - if they are all the same, we proceed
+
+# STEP 4: generate secret keys using identities
+secret_keys = []
+for inventory in inventories:
+    secret_keys.append(pkg.signIdentity(inventory.identity))
+
+# STEP 5: compute t values
+t_values = []
+for inventory in inventories:
+    t_values.append(pkg.computeT(inventory.rand_int))
+
+# STEP 6: with t values, calc aggregate t
+aggregate_t = pkg.aggregateT(t_values)
+
+# STEP 7: calculate hash(t,m)
+# decimal_hash = hashAggTandMessage(aggregate_t, [INSERT MESSAGE HERE])
+
+# STEP 8: each inventory signs the hash
+
+# STEP 9 : calculate aggregate s
+
+# STEP 10: return (aggT, aggS) to pkg
+
+# STEP 11: verificaiton occurs IN PKG (I THINK??)
+
+# STEP 12: encrypt message
+
+# STEP 13: decrypt message
 
 if __name__ == '__main__':
     app.run(debug=True)

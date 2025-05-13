@@ -49,7 +49,7 @@ def encrypt(raw_data : str, private_key : int, public_key : list):
     signature = pow(decimal_data, private_key, public_key[0])
     return [decimal_data, signature]
 
-def hashAggTandMessage(t : int, m):
+def hashAggTandMessage(t : int, m : str):
     combined_raw_data = f"{t}{m}"
     hex_object = md5(combined_raw_data.encode("utf-8"))
     hex_data = hex_object.digest()
