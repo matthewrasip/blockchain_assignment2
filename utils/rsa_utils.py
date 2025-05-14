@@ -66,3 +66,9 @@ def verification(message : int , signature : int, public_key : list):
     else:
         return False
     
+def rsa_encrypt(message : int, public_key : list):
+    return pow(message, public_key[1], public_key[0])
+
+def rsa_decrypt(ciphertext : int, private_key : list):
+    return pow(ciphertext, private_key[0], private_key[1])
+    
