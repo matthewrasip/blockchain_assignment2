@@ -12,6 +12,8 @@ import data.InventoryB.inventory_B_keys as B
 import data.InventoryC.inventory_C_keys as C
 import data.InventoryD.inventory_D_keys as D
 
+import data.officer as O
+
 import data.pkg as server
 
 # list of all inventory objects (for consensus)
@@ -193,15 +195,20 @@ def search():
 
             verif2 = (result1 * result2) % pkg.pkg_public_key[0]
 
+            print(record_string)
+
             if verif1 == verif2:
                 print("success!!!")
+                # STEP 12: encrypt message
+
+                # STEP 13: decrypt message
+
             else: 
                 print("fail :(")
+                # do not encrypt and ABORT
 
 
-            # STEP 12: encrypt message
-
-            # STEP 13: decrypt message
+            
 
         else:
             print(f"No record found for Item ID {query_id}")
