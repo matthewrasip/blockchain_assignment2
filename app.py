@@ -98,17 +98,57 @@ def submit():
     # 5) Consensus failed
     return render_template('index.html', error="Verification failed")
 
+
 @app.route('/search', methods=['GET'])
 def search():
+    # STEP 1: get ID from user via ?query_id=XXX
+    query_id = request.args.get('query_id', '').strip()
+    if query_id:
+        record_string = None
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+
+        # STEP 2: search each inventory JSON
+        for loc in ['A', 'B', 'C', 'D']:
+            inv_path = os.path.join(
+                data_dir,
+                f"Inventory{loc}",
+                f"inventory_{loc}.json"
+            )
+            try:
+                with open(inv_path, 'r') as f:
+                    db = json.load(f)
+            except (FileNotFoundError, JSONDecodeError):
+                continue
+
+            for rec in db.get('records', []):
+                if rec.get('item_id') == query_id:
+                    # use record’s own location
+                    location = rec.get('location', loc)
+
+                    # format price: drop .0 if whole number
+                    price = rec.get('price')
+                    if isinstance(price, float) and price.is_integer():
+                        price_str = f"{price:.0f}"
+                    else:
+                        price_str = str(price)
+
+                    record_string = f"{rec['item_id']}{rec['qty']}{price_str}{location}"
+                    break
+            if record_string:
+                break
+
+        # print to terminal only
+        if record_string:
+            print(f"Found record: {record_string}")
+        else:
+            print(f"No record found for Item ID {query_id}")
+
     return render_template('search.html')
 
-# PKG variable loaded
+
+    # PKG variable loaded
 pkg = server.pkg
 
-
-# STEP 1: get ID from user
-
-# STEP 2: search each inventory for ID - returning all the data associated with it in the compressed format (idpriceqtylocation)
 
 # STEP 3: consensus with the compressed format - if they are all the same, we proceed
 
@@ -139,6 +179,7 @@ aggregate_t = pkg.aggregateT(t_values)
 # STEP 12: encrypt message
 
 # STEP 13: decrypt message
+
 
 if __name__ == '__main__':
     app.run(debug=True)
