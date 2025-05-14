@@ -7,6 +7,10 @@ class Inventory:
         self.private_key = private_key
         self.identity = identity
         self.rand_int = rand_int
+        self.secret_key = 0
+        self.t_value = 0
+        self.signature = 0
+
 
 class PKG:
     def __init__(self, pkg_public_key : list, pkg_private_key : list):
@@ -21,7 +25,7 @@ class PKG:
     def computeT(self, rand_int : int):
         return pow(rand_int, self.pkg_public_key[1], self.pkg_public_key[0])
     
-    def aggregateT(self, t_values : list):
+    def aggregate(self, t_values : list):
         result = 1
         for values in t_values:
             result *= values
@@ -52,7 +56,7 @@ def encrypt(raw_data : str, private_key : int, public_key : list):
 def hashAggTandMessage(t : int, m : str):
     combined_raw_data = f"{t}{m}"
     hex_object = md5(combined_raw_data.encode("utf-8"))
-    hex_data = hex_object.digest()
+    hex_data = hex_object.hexdigest()
     return int(hex_data, 16)
 
 

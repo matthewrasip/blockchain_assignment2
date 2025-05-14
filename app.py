@@ -137,48 +137,80 @@ def search():
             if record_string:
                 break
 
+            # STEP 3: consensus with the compressed format - if they are all the same, we proceed
+
+            
         # print to terminal only
         if record_string:
-            print(f"Found record: {record_string}")
+            # print(f"Found record: {record_string}")
+
+            # PKG variable loaded
+            pkg = server.pkg
+
+
+            # STEP 4: generate secret keys using identities
+            for inventory in inventories:
+                inventory.secret_key = pkg.signIdentity(inventory.identity)
+
+            # STEP 5: compute t values
+            for inventory in inventories:
+                inventory.t_value = pkg.computeT(inventory.rand_int)
+
+            # STEP 6: with t values, calc aggregate t
+            t_values = []
+            for inventory in inventories:
+                t_values.append(inventory.t_value)
+            aggregate_t = pkg.aggregate(t_values)
+
+
+            # STEP 7: calculate hash(t,m)
+            decimal_hash = hashAggTandMessage(aggregate_t, record_string)
+
+            # STEP 8: each inventory signs the hash
+            for inventory in inventories:
+                inventory.signature = inventory.secret_key * pow(inventory.rand_int, decimal_hash, pkg.pkg_public_key[0])
+
+
+            # STEP 9 : calculate aggregate s
+            signatures = []
+            for inventory in inventories:
+                signatures.append(inventory.signature)
+            aggregate_s = pkg.aggregate(signatures)
+
+            # STEP 10: return (aggT, aggS) to pkg
+
+            # STEP 11: verificaiton occurs IN PKG (I THINK??)
+            # start verification 1
+            verif1 = pow(aggregate_s, pkg.pkg_public_key[1], pkg.pkg_public_key[0])
+
+            # start verification 2
+            aggregate_i = 1
+            for inventory in inventories:
+                aggregate_i *= inventory.identity
+
+            result1 = aggregate_i % pkg.pkg_public_key[0]
+            result2 = pow(aggregate_t, decimal_hash, pkg.pkg_public_key[0])
+
+            verif2 = (result1 * result2) % pkg.pkg_public_key[0]
+
+            if verif1 == verif2:
+                print("success!!!")
+            else: 
+                print("fail :(")
+
+
+            # STEP 12: encrypt message
+
+            # STEP 13: decrypt message
+
         else:
             print(f"No record found for Item ID {query_id}")
 
     return render_template('search.html')
 
 
-    # PKG variable loaded
-pkg = server.pkg
 
 
-# STEP 3: consensus with the compressed format - if they are all the same, we proceed
-
-# STEP 4: generate secret keys using identities
-secret_keys = []
-for inventory in inventories:
-    secret_keys.append(pkg.signIdentity(inventory.identity))
-
-# STEP 5: compute t values
-t_values = []
-for inventory in inventories:
-    t_values.append(pkg.computeT(inventory.rand_int))
-
-# STEP 6: with t values, calc aggregate t
-aggregate_t = pkg.aggregateT(t_values)
-
-# STEP 7: calculate hash(t,m)
-# decimal_hash = hashAggTandMessage(aggregate_t, [INSERT MESSAGE HERE])
-
-# STEP 8: each inventory signs the hash
-
-# STEP 9 : calculate aggregate s
-
-# STEP 10: return (aggT, aggS) to pkg
-
-# STEP 11: verificaiton occurs IN PKG (I THINK??)
-
-# STEP 12: encrypt message
-
-# STEP 13: decrypt message
 
 
 if __name__ == '__main__':
