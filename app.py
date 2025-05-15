@@ -95,11 +95,11 @@ def submit():
             with open(fname, 'w') as f:
                 json.dump(db, f, indent=2)
 
-        return render_template('index.html', message="Record written to all inventories")
+        return render_template('index.html', message="Record Successfully Added")
 
     # 5) Consensus failed
     print("fail")
-    return render_template('index.html', error="Verification failed")
+    return render_template('index.html', error="Failed to Add Record")
 
 
 @app.route('/search', methods=['GET'])
