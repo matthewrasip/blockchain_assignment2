@@ -149,7 +149,7 @@ def search():
                 'item_id':  rec['item_id'],
                 'qty':       rec['qty'],
                 'price':     price_str,
-                'location':  loc
+                'location':  rec.get('location', loc)
             }
         else:
             print(f"Consensus FAILED ({len(found_inventories)}/{total_nodes}), aborting search")
