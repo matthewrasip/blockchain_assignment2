@@ -1,4 +1,5 @@
 from hashlib import md5
+import struct
 
 class Inventory:
     # experimenting with ways we can get public and private keys to app.py
@@ -65,4 +66,13 @@ def verification(message : int , signature : int, public_key : list):
         return True
     else:
         return False
+    
+def rsa_encrypt(message : str, public_key : list):
+    message_bytes = bytes(message, "utf-8")
+    decimal_bytes = int.from_bytes(message_bytes, "big")
+    return pow(decimal_bytes, public_key[1], public_key[0]) 
 
+def rsa_decrypt(ciphertext : int, private_key : list):
+    decrypted_decimal = pow(ciphertext, private_key[0], private_key[1])
+    res = struct.pack(">Q", decrypted_decimal)
+    return res.decode("utf-8")
