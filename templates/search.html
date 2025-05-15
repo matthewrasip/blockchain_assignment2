@@ -62,6 +62,21 @@
       font-size: 1rem;
       cursor: pointer;
     }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      text-align: left;
+    }
+    .error {
+      color: red;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -77,7 +92,24 @@
       <input type="text" name="query_id" id="query_id" placeholder="e.g. 003">
       <button type="submit">Search</button>
     </form>
+
+    {% if record %}
+      <table>
+        <tr>
+          <th>Item ID</th><th>Quantity</th><th>Price</th><th>Location</th>
+        </tr>
+        <tr>
+          <td>{{ record.item_id }}</td>
+          <td>{{ record.qty }}</td>
+          <td>{{ record.price }}</td>
+          <td>{{ record.location }}</td>
+        </tr>
+      </table>
+    {% elif error %}
+      <div class="error">Failed to retrieve Item.</div>
+    {% endif %}
   </div>
 </body>
 </html>
+
 

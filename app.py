@@ -96,54 +96,66 @@ def submit():
             with open(fname, 'w') as f:
                 json.dump(db, f, indent=2)
 
-        return render_template('index.html', message="Record written to all inventories")
+        return render_template('index.html', message="Record Successfully Added")
 
     # 5) Consensus failed
     print("fail")
-    return render_template('index.html', error="Verification failed")
+    return render_template('index.html', error="Failed to Add Record")
 
 
 @app.route('/search', methods=['GET'])
 def search():
-    # STEP 1: get ID from user via ?query_id=XXX
     query_id = request.args.get('query_id', '').strip()
-    if query_id:
-        record_string = None
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    record = None
+    error = False
+    record_string = None
 
-        # STEP 2: search each inventory JSON
-        for loc in ['A', 'B', 'C', 'D']:
-            inv_path = os.path.join(
-                data_dir,
-                f"Inventory{loc}",
-                f"inventory_{loc}.json"
-            )
+    if query_id:
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        found_inventories = []
+
+        # STEP 2: scan each inventory
+        for loc in ['A','B','C','D']:
+            path = os.path.join(data_dir, f"Inventory{loc}", f"inventory_{loc}.json")
             try:
-                with open(inv_path, 'r') as f:
+                with open(path, 'r') as f:
                     db = json.load(f)
             except (FileNotFoundError, JSONDecodeError):
                 continue
 
             for rec in db.get('records', []):
                 if rec.get('item_id') == query_id:
-                    # use record’s own location
-                    location = rec.get('location', loc)
-
-                    # format price: drop .0 if whole number
-                    price = rec.get('price')
-                    if isinstance(price, float) and price.is_integer():
-                        price_str = f"{price:.0f}"
-                    else:
-                        price_str = str(price)
-
-                    record_string = f"{rec['item_id']}{rec['qty']}{price_str}{location}"
+                    found_inventories.append((loc, rec))
                     break
-            if record_string:
-                break
 
-            # STEP 3: consensus with the compressed format - if they are all the same, we proceed
+        # STEP 3: consensus check ≥ 2/3 of nodes
+        total_nodes = len(inventories)      # 4
+        threshold   = (total_nodes / 3) * 2
+        if len(found_inventories) >= threshold:
+            loc, rec = found_inventories[0]
 
-            
+            # format price
+            price = rec['price']
+            if isinstance(price, float) and price.is_integer():
+                price_str = f"{price:.0f}"
+            else:
+                price_str = str(price)
+
+            # build record string
+            record_string = f"{rec['item_id']}{rec['qty']}{price_str}{loc}"
+            print(f"Consensus OK ({len(found_inventories)}/{total_nodes}), record: {record_string}")
+
+            record = {
+                'item_id':  rec['item_id'],
+                'qty':       rec['qty'],
+                'price':     price_str,
+                'location':  loc
+            }
+        else:
+            print(f"Consensus FAILED ({len(found_inventories)}/{total_nodes}), aborting search")
+            error = True
+
+
         # print to terminal only
         if record_string:
             # print(f"Found record: {record_string}")
@@ -213,13 +225,11 @@ def search():
                 print("fail :(")
                 # do not encrypt and ABORT
 
-
-            
-
         else:
             print(f"No record found for Item ID {query_id}")
 
-    return render_template('search.html')
+    # Render the same search page, passing in record or error
+    return render_template('search.html', record=record, error=error)
 
 
 if __name__ == '__main__':

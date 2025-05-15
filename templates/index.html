@@ -9,14 +9,12 @@
       margin: 0;
       height: 100vh;
       display: flex;
-      flex-direction: column;   /* stack nav then container */
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       background: #f5f5f5;
       font-family: Arial, sans-serif;
     }
-
-    /* Nav container */
     nav {
       width: 320px;
       text-align: center;
@@ -26,14 +24,12 @@
       display: inline-block;
       padding: 0.5rem 1rem;
       margin: 0 0.5rem;
-      background: #888;         /* grey button */
+      background: #888;
       color: #fff;
       text-decoration: none;
       border-radius: 4px;
       font-size: 0.9rem;
     }
-
-    /* Form card */
     .container {
       background: #fff;
       padding: 2rem;
@@ -64,11 +60,23 @@
       border: 1px solid #ccc;
     }
     button {
-      background: blue;        
+      background: blue;
       color: #fff;
       border: none;
       font-size: 1rem;
       cursor: pointer;
+    }
+
+    /* Status messages */
+    .message {
+      color: green;
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      margin-top: 0.5rem;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -80,6 +88,7 @@
 
   <div class="container">
     <h1>Enter a New Inventory Record</h1>
+
     <form action="{{ url_for('submit') }}" method="post">
       <label for="location">Select location</label>
       <select name="location" id="location">
@@ -97,7 +106,14 @@
 
       <button type="submit">Submit Record</button>
     </form>
+
+    {% if message %}
+      <div class="message">{{ message }}</div>
+    {% elif error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
   </div>
 </body>
 </html>
+
 
