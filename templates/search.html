@@ -89,7 +89,7 @@
     <h1>Search for an Inventory Record</h1>
     <form action="{{ url_for('search') }}" method="get">
       <label for="query_id">Item ID</label>
-      <input type="text" name="query_id" id="query_id" placeholder="e.g. 003">
+      <input type="text" name="query_id" id="query_id" placeholder="e.g. 003" required>
       <button type="submit">Search</button>
     </form>
 
