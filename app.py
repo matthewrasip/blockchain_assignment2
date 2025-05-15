@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import json
 from json import JSONDecodeError
 import os
+import struct
 
 # import functions
 from utils.rsa_utils import *
@@ -196,14 +197,18 @@ def search():
 
             verif2 = (result1 * result2) % pkg.pkg_public_key[0]
 
-            print(record_string)
-
             if verif1 == verif2:
                 print("success!!!")
                 # STEP 12: encrypt message
+                record_string_bytes = bytes(record_string, "utf-8")
+                decimal_string = int.from_bytes(record_string_bytes, "big")
+                ciphertext = pow(decimal_string, O.officer_public_key[1], O.officer_public_key[0])
 
                 # STEP 13: decrypt message
-
+                decrypted_decimal = pow(ciphertext, O.officer_private_key[0], O.officer_private_key[1])
+                res = struct.pack(">Q", decrypted_decimal)
+                decrypted_message = res.decode("utf-8")
+                print(decrypted_message)
             else: 
                 print("fail :(")
                 # do not encrypt and ABORT
