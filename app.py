@@ -226,7 +226,6 @@ def search():
                     return render_template('search.html', incorrect=incorrect)
                 
                 decrypted_message = res.decode("utf-8")
-                print("test")
                 
                 if decrypted_message == record_string:
                     return render_template('search.html', record=record)
