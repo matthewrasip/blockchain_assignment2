@@ -96,13 +96,13 @@
       </select>
 
       <label for="item_id">Item ID</label>
-      <input type="text" name="item_id" id="item_id" placeholder="e.g. 005">
+      <input type="text" name="item_id" id="item_id" placeholder="e.g. 005" required>
 
       <label for="qty">Quantity</label>
-      <input type="number" name="qty" id="qty" min="0" placeholder="e.g. 10">
+      <input type="number" name="qty" id="qty" min="0" placeholder="e.g. 10" required>
 
       <label for="price">Price</label>
-      <input type="number" step="0.01" name="price" id="price" min="0" placeholder="e.g. 19.99">
+      <input type="number" step="1" name="price" id="price" min="0" placeholder="e.g. 20" required>
 
       <button type="submit">Submit Record</button>
     </form>
