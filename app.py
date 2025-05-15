@@ -98,6 +98,7 @@ def submit():
         return render_template('index.html', message="Record written to all inventories")
 
     # 5) Consensus failed
+    print("fail")
     return render_template('index.html', error="Verification failed")
 
 
@@ -214,10 +215,6 @@ def search():
             print(f"No record found for Item ID {query_id}")
 
     return render_template('search.html')
-
-
-
-
 
 
 if __name__ == '__main__':
