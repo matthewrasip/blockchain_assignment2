@@ -109,6 +109,7 @@ def search():
     record = None
     error = False
     record_string = None
+    incorrect = False
 
     if query_id:
         data_dir = os.path.join(os.path.dirname(__file__), 'data')
@@ -218,18 +219,31 @@ def search():
 
                 # STEP 13: decrypt message
                 decrypted_decimal = pow(ciphertext, O.officer_private_key[0], O.officer_private_key[1])
-                res = struct.pack(">Q", decrypted_decimal)
+                try: 
+                    res = struct.pack(">Q", decrypted_decimal)
+                except struct.error:
+                    incorrect = True
+                    return render_template('search.html', incorrect=incorrect)
+                
                 decrypted_message = res.decode("utf-8")
-                print(decrypted_message)
-            else: 
+                print("test")
+                
+                if decrypted_message == record_string:
+                    return render_template('search.html', record=record)
+                else:
+                    return render_template('search.html', incorrect=incorrect)
+            else:
+                # do not encrypt and ABORT 
                 print("fail :(")
-                # do not encrypt and ABORT
+                incorrect = True
+                return render_template('search.html', incorrect=incorrect)
+                
 
         else:
             print(f"No record found for Item ID {query_id}")
 
     # Render the same search page, passing in record or error
-    return render_template('search.html', record=record, error=error)
+    return render_template('search.html', error=error)
 
 
 if __name__ == '__main__':

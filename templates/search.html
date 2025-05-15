@@ -73,6 +73,11 @@
       text-align: left;
     }
     .error {
+      color: black;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    .incorrect {
       color: red;
       margin-top: 1rem;
       font-weight: bold;
@@ -107,6 +112,8 @@
       </table>
     {% elif error %}
       <div class="error">Failed to retrieve Item.</div>
+    {% elif incorrect %}
+      <div class="incorrect">Failed to authenticate keys.</div>
     {% endif %}
   </div>
 </body>
