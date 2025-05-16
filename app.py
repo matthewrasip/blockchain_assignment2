@@ -3,7 +3,6 @@ import json
 from json import JSONDecodeError
 import os
 import struct
-import re
 
 # import functions
 from utils.rsa_utils import *
@@ -145,7 +144,7 @@ def search():
 
             # build record string
             record_string = f"{rec['item_id']}{rec['qty']}{price_str}{loc}"
-            print(f"Consensus OK ({len(found_inventories)}/{total_nodes}), record: {record_string}")
+            # print(f"Consensus OK ({len(found_inventories)}/{total_nodes}), record: {record_string}")
 
             record = {
                 'item_id':  rec['item_id'],
@@ -154,7 +153,7 @@ def search():
                 'location':  rec.get('location', loc)
             }
         else:
-            print(f"Consensus FAILED ({len(found_inventories)}/{total_nodes}), aborting search")
+            # print(f"Consensus FAILED ({len(found_inventories)}/{total_nodes}), aborting search")
             error = True
 
 
@@ -195,63 +194,61 @@ def search():
                 signatures.append(inventory.signature)
             aggregate_s = pkg.aggregate(signatures)
 
+            # CONSENSUS PT 2
+            s_checks = 0
+            for inventory in inventories:
+                if aggregate_s == aggregate_s:
+                    s_checks += 1
+
+            if s_checks >= (len(inventories) / 3 * 2):
+                pass
+            else:
+                return render_template('search.html', incorrect=incorrect)
+
+            # STEP 10: return (aggT, aggS) to pkg
+
+            # STEP 11: verificaiton occurs IN PKG (I THINK??)
+            # start verification 1
+            verif1 = pow(aggregate_s, pkg.pkg_public_key[1], pkg.pkg_public_key[0])
+
+            # start verification 2
             aggregate_i = 1
             for inventory in inventories:
                 aggregate_i *= inventory.identity
 
-            # STEP 10: return (aggT, aggS) to pkg
-            # STEP 11: consensus already done (shouldn't matter when, just as long as it occurred in pkg reliably)
+            result1 = aggregate_i % pkg.pkg_public_key[0]
+            result2 = pow(aggregate_t, decimal_hash, pkg.pkg_public_key[0])
 
-            # STEP 12: send message and variables encrypted to officer
-            aggT = str(aggregate_t)
-            aggS = str(aggregate_s)
-            message = str(record_string)
-            aggI = str(aggregate_i)
-
-            # STEP 13: encrypt
-            encrypted_aggT = rsa_encrypt(aggT, O.officer_public_key)
-            encrypted_aggS = rsa_encrypt(aggS, O.officer_public_key)
-            encrypted_hash = rsa_encrypt(str(decimal_hash), O.officer_public_key)
-            encrypted_aggI = rsa_encrypt(aggI, O.officer_public_key)
-            encrypted_message = rsa_encrypt(message, O.officer_public_key)
-
-            
-
-            # STEP 14: decrypt
-            decrypted_aggT = rsa_decrypt(encrypted_aggT, O.officer_private_key)
-            decrypted_aggS = rsa_decrypt(encrypted_aggS, O.officer_private_key)
-            decrypted_hash = rsa_decrypt(encrypted_hash, O.officer_private_key)
-            decrypted_aggI = rsa_decrypt(encrypted_aggI, O.officer_private_key)
-            decrypted_message = rsa_decrypt(encrypted_message, O.officer_private_key)
-            
-            false_check = []
-            false_check.append(decrypted_aggI)
-            false_check.append(decrypted_aggS)
-            false_check.append(decrypted_hash)
-            false_check.append(decrypted_aggT)
-            false_check.append(decrypted_message)
-            print(false_check)
-
-            for val in false_check:
-                if val == False:
-                    incorrect = True
-                    return render_template('search.html', incorrect=incorrect)
-                else: 
-                    continue
-
-
-            # STEP 15: officer verifies
-            # start verification 1
-            verif1 = pow(int(decrypted_aggS), pkg.pkg_public_key[1], pkg.pkg_public_key[0])
-
-            # start verification 2
-            result1 = int(decrypted_aggI) % pkg.pkg_public_key[0]
-            result2 = pow(int(decrypted_aggT), int(decrypted_hash), pkg.pkg_public_key[0])
             verif2 = (result1 * result2) % pkg.pkg_public_key[0]
 
             if verif1 == verif2:
                 print("success!!!")
-                return render_template('search.html', record=record)
+                # STEP 12: encrypt message
+                record_string_bytes = bytes(record_string, "utf-8")
+                decimal_string = int.from_bytes(record_string_bytes, "big")
+                ciphertext = pow(decimal_string, O.officer_public_key[1], O.officer_public_key[0])
+
+                # STEP 13: decrypt message
+                decrypted_decimal = pow(ciphertext, O.officer_private_key[0], O.officer_private_key[1])
+                try: 
+                    res = struct.pack(">Q", decrypted_decimal)
+                except struct.error:
+                    incorrect = True
+                    return render_template('search.html', incorrect=incorrect)
+                
+                decrypted_message = res.decode("utf-8")
+                
+                if decrypted_message == record_string:
+                    return render_template('search.html', record=record)
+                else:
+                    return render_template('search.html', incorrect=incorrect)
+            else:
+                # do not encrypt and ABORT 
+                print("fail :(")
+                incorrect = True
+                return render_template('search.html', incorrect=incorrect)
+                
+
         else:
             print(f"No record found for Item ID {query_id}")
 
